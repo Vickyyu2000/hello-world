@@ -1,4 +1,4 @@
 # school-project
-csc 360 - Operating System
-csc 370 - Database System
-seng 265 - Software Development Methods
+csc 360 - Operating System\n
+csc 370 - Database System\n
+seng 265 - Software Development Methods\n
