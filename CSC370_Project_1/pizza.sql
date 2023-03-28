@@ -1,3 +1,6 @@
+-- Siyi Liu V00951684
+-- Churong Yu V00922542
+
 /* Create the schema for our tables */
 create table Person(name VARCHAR(30), age int, gender VARCHAR(10));
 create table Frequents(name VARCHAR(30), pizzeria VARCHAR(30));
@@ -12,7 +15,7 @@ insert into Person values('Dan', 13, 'male');
 insert into Person values('Eli', 45, 'male');
 insert into Person values('Fay', 21, 'female');
 insert into Person values('Gus', 24, 'male');
-insert into Person values('Hil', 30, 'female');
+insert into Person values('Hil', 30, 'female'); 
 insert into Person values('Ian', 18, 'male');
 
 insert into Frequents values('Amy', 'Pizza Hut');
@@ -76,61 +79,83 @@ insert into Serves values('Chicago Pizza', 'cheese', 7.75);
 insert into Serves values('Chicago Pizza', 'supreme', 8.5);
 
 /*Q1*/
-SELECT name
+SELECT *
 FROM Person
 WHERE age<18;
 
-/* π name (σ age < 18 (Person)) */
 
 /*Q2*/
-SELECT serves.pizzeria, serves.pizza, serves.price
-from serves natural join eats
-where eats.name = 'Amy' AND serves.price < 10;
+--version 1
+SELECT  Serves.pizzeria, Serves.pizza, Serves.price
+FROM Eats NATURAL JOIN Serves
+WHERE Eats.name = 'Amy' AND Serves.price < 10;
 
-/* Q3 */
-SELECT frequents.pizzeria, frequents.name, person.age
-from frequents natural join person
-where person.age<18;
+--version 2
+SELECT  pizzeria, pizza, price
+FROM Serves
+where pizza in (
+    select pizza
+    from Eats
+    where name = 'Amy'
+          ) and Serves.price < 10;
 
-/* Q4 */
-select distinct f1.pizzeria
-from person p1 natural join frequents f1, person p2 natural join frequents f2
-where f1.pizzeria = f2.pizzeria and p1.age < 18 and p2.age > 30;
-
-/* Q5 */
-SELECT F1.pizzeria, P1.name, P1.age, P2.name, P2.age
-FROM Frequents F1
-JOIN Frequents F2 ON F1.pizzeria = F2.pizzeria AND F1.name <> F2.name
-JOIN Person P1 ON F1.name = P1.name
-JOIN Person P2 ON F2.name = P2.name
-WHERE P1.age < 18 AND P2.age > 30;
-
-select distinct f1.pizzeria, p1.name, p1.age, p2.name, p2.age
-from person p1 natural join frequents f1, person p2 natural join frequents f2
-where f1.pizzeria = f2.pizzeria and p1.age < 18 and p2.age > 30;
+/*Q3*/
+SELECT  Frequents.pizzeria, Person.name, Person.age
+FROM Person NATURAL JOIN Frequents
+WHERE Person.age<18;
 
 
-/* Q6 */
-SELECT Eats.name, COUNT(DISTINCT Eats.pizza) AS num_pizzas
-FROM Eats
-WHERE Eats.name IN (SELECT Eats.name FROM Eats GROUP BY Eats.name HAVING COUNT(DISTINCT Eats.pizza) >= 2)
-GROUP BY Eats.name
-ORDER BY num_pizzas DESC;
+/*Q4*/
+SELECT  Frequents.pizzeria
+FROM Person NATURAL JOIN Frequents
+WHERE Person.age<18 AND Frequents.pizzeria IN (
+    SELECT  Frequents.pizzeria
+    FROM Person NATURAL JOIN Frequents
+    WHERE  Person.age>30
+    );
 
-select eats.name, count(eats.pizza) as count
-from eats
-group by eats.name
-having count(eats.pizza) >= 2
-order by count(eats.pizza) desc;
+/*Q5*/
+--version1:
+Create view Group1 as
+    select Frequents.pizzeria, Frequents.name, Person.age
+    from Person NATURAL JOIN Frequents
+    WHERE Person.age<18;
+
+Create view Group2 as
+    select Frequents.pizzeria, Frequents.name, Person.age
+    from Person NATURAL JOIN Frequents
+    WHERE Person.age>30;
+SELECT pizzeria, Group1.name, Group1.age, Group2.name, Group2.age
+FROM Group1 join Group2 using (pizzeria);
+drop view Group1;
+drop view Group2;
+
+--version2:
+select pizzeria, Group1.name, Group1.age, Group2.name, Group2.age
+FROM (select Frequents.pizzeria, Frequents.name, Person.age
+    from Person NATURAL JOIN Frequents
+    WHERE Person.age<18) group1 join (
+    select Frequents.pizzeria, Frequents.name, Person.age
+    from Person NATURAL JOIN Frequents
+    WHERE Person.age>30 ) group2 using (pizzeria);
+
+/*Q6*/
+select Eats.name, count(Eats.pizza)
+from Eats
+group by Eats.name
+having count(Eats.pizza)>= 2
+order by count(Eats.pizza) desc;
 
 
-/* Q7 */
-
-select serves.pizza, avg(serves.price)
-from serves
-group by serves.pizza
+/*Q7*/
+select pizza, avg(price)
+from Serves
+group by  pizza
 order by avg(price) desc;
 
-select person.name, person.age,eats.pizza
-from person left join eats using(name)
-where age<18;
+
+
+DROP table Person;
+drop table eats;
+drop table Frequents;
+drop table serves;
