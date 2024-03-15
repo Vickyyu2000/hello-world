@@ -1,0 +1,5 @@
+﻿cl : 命令行 warning D9035: “Gm”选项已否决，并将在将来的版本中移除
+  texture.cpp
+  GLModel.cpp
+  正在生成代码...
+  GLModel.vcxproj -> C:\Users\churo\OneDrive\Desktop\uvic\csc473 animation\a1\A1\lib\GLModel.lib

@@ -1,0 +1,14 @@
+﻿cl : 命令行 warning D9035: “Gm”选项已否决，并将在将来的版本中移除
+  BaseSystem.cpp
+  MyModel.cpp
+  ResourceManager.cpp
+  PathSimulator.cpp
+  myScene.cpp
+  HermiteSpline.cpp
+  GlobalResourceManager.cpp
+  BaseSimulator.cpp
+  BaseObject.cpp
+  animTcl.cpp
+  anim.cpp
+  正在生成代码...
+  anim.vcxproj -> C:\Users\churo\OneDrive\Desktop\uvic\csc473 animation\a1\A1\Build\anim.exe
